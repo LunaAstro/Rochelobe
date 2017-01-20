@@ -1,0 +1,24 @@
+package:
+  name: rochelobe
+  version: v0.1
+
+source:
+  git_rev: v0.1
+  git_url: https://github.com/LunaAstro/proj-roche.git
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - numpy
+
+  run:
+    - python
+    - numpy
+    - wxpython
+
+about:
+  home: https://github.com/LunaAstro/proj-roche
+  license: GPL3
+  license_file: LICENSE
+  description: 'Roche potential of a binary system'
