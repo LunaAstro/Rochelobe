@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from wx.lib.masked import NumCtrl
-
+from pymouse import PyMouse
 
 
 class MyWindow(wx.Frame):
@@ -49,12 +49,12 @@ class MyWindow(wx.Frame):
         self.label4 = wx.StaticText(self, label="The x position of a level curve:")
         self.fontl4 = wx.Font(16, wx.ROMAN, wx.NORMAL, wx.LIGHT)
         self.label4.SetFont(self.fontl4)
-        grid.Add(self.label4, pos=(6,0))
+        grid.Add(self.label4, pos=(8,0))
         
         self.label5 = wx.StaticText(self, label="The y position of a level curve:")
         self.fontl5 = wx.Font(16, wx.ROMAN, wx.NORMAL, wx.LIGHT)
         self.label5.SetFont(self.fontl5)
-        grid.Add(self.label5, pos=(7,0))
+        grid.Add(self.label5, pos=(9,0))
         
         ## textboxes
         self.mass1 = wx.lib.masked.NumCtrl(self, autoSize=False, fractionWidth=2, value=1.0)
@@ -64,11 +64,22 @@ class MyWindow(wx.Frame):
         self.distance = wx.lib.masked.NumCtrl(self, autoSize=False, fractionWidth=2, value=2.0)
         grid.Add(self.distance, pos=(5,1))
         self.xpos = wx.lib.masked.NumCtrl(self, autoSize=False, fractionWidth=2)
-        grid.Add(self.xpos, pos=(6,1))
+        grid.Add(self.xpos, pos=(8,1))
         self.ypos = wx.lib.masked.NumCtrl(self, autoSize=False, fractionWidth=2)
-        grid.Add(self.ypos, pos=(7,1))
+        grid.Add(self.ypos, pos=(9,1))
 
 
+        self.label6 = wx.StaticText(self, label="How many levels do you want ?")
+        self.fontl6 = wx.Font(18, wx.ROMAN, wx.ITALIC, wx.NORMAL)
+        self.label6.SetFont(self.fontl6)
+        grid.Add(self.label6, pos=(7,0))
+        self.lev = wx.lib.masked.NumCtrl(self, autoSize=False, fractionWidth=2)
+        grid.Add(self.lev, pos=(7,1))
+
+        # add a spacer to the sizer
+        grid.Add((10, 40), pos=(6,0))
+        grid.Add((10, 40), pos=(10,0))
+    
         # Create buttons
         ## button 1 for plotting
         self.button1 =wx.Button(self, label="Plot") #, size(100,30))
@@ -109,6 +120,7 @@ class MyWindow(wx.Frame):
         #get position values of a particular point on the image
         j = self.xpos.GetValue()
         k = self.ypos.GetValue()
+        lev = self.lev.GetValue()
         
         # draw a figure
         ax = plt.subplot(111)
@@ -129,10 +141,22 @@ class MyWindow(wx.Frame):
         zz = - G*m1/r11 - G*m2/r22 - (j**2 + k**2)/2
         
         # put the potential value of the point into the level curve
-        levels=[-10,-8,-6,-5.5,-5.3,-4.8,-4.6,-4.3,-4,-3.8,-3.6,-3.4,-3.2,-3,-2.0,-1.0]
-        levels.append(zz)
-        levels.sort()  #make the levels in order
-        
+        if lev == 0:
+            levels=[-10,-8,-6,-5.5,-5.3,-4.8,-4.6,-4.3,-4,-3.8,-3.6,-3.4,-3.2,-3,-2.0,-1.0]
+            levels.append(zz)
+            levels.sort()  #make the levels in order
+
+        else:
+            levels=[-10]
+            i = 0
+            q = 10/lev
+            p=-10
+            while i < q:
+                p = p + lev
+                levels.append(p)
+                i = i + 1
+
+
         #plot a contour figure of the potential field
         cp = plt.contour(X, Y, z, levels=levels, cmap=cm.coolwarm, origin='lower', linewidths=2)
         plt.colorbar(cp, shrink=0.8, extend='both')  #make a colorbar
